@@ -110,6 +110,24 @@ public sealed class KalkanApi
         return signedPayload.ToString();
     }
 
+    public string VerifyXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+
+        var signedPayloadLength = 0;
+        var errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, content.Length, null, ref signedPayloadLength);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var signedPayload = new StringBuilder(signedPayloadLength);
+        errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength);
+        ThrowIfError(errorCode);
+        return signedPayload.ToString();
+    }
+
     public string SignData(byte[] content, KalkanSignFlags flags, string? certificateAlias = null, string? inputSignature = null)
     {
         EnsureInitialized();

@@ -50,6 +50,15 @@ void SignXml(KalkanApi api)
     var signXml = api.SignXml(documentToSign);
 
     Console.WriteLine(signXml);
+    try
+    {
+        api.VerifyXml(signXml, KalkanSignFlags.DoNotCheckCertificateTime);
+        Console.WriteLine("XML verified successfully!");
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
 }
 
 void SignData(KalkanApi api)
@@ -64,5 +73,6 @@ void SignData(KalkanApi api)
 
     Console.WriteLine(signedData);
 
-    api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+    // Console.WriteLine("Data verified successfully!");
 }
