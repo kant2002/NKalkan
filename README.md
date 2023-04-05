@@ -5,6 +5,9 @@
 В настройках Windows надо установить системную локаль на Kazakh (Kazakhstan).
 Это позволит прочитать названия организаций корректно.
 
+Так как НУЦ не разрешает распространять бинарники, то надо самостоятельно положить KalkanCrypt_x64.dll в папку с конечным исполняемым файлом.
+Как например `NKalcan.TestBed\bin\Debug\net7.0`.
+
 ## Подпись XML документа
 
 ```csharp
@@ -16,7 +19,21 @@ var documentToSign = "<xml><MyData /></xml>";
 var client = new KalkanApi();
 
 client.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-var signXml = client.SignXml(documentToSign);
+var signedXml = client.SignXml(documentToSign);
 
-Console.WriteLine(signXml);
+Console.WriteLine(signedXml);
+```
+
+## Проверка XML документа
+
+```csharp
+try
+{
+    api.VerifyXml(signedXml);
+    Console.WriteLine("XML verified successfully!");
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.Message);
+}
 ```

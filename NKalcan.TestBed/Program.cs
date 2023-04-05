@@ -47,12 +47,12 @@ void SignXml(KalkanApi api)
     var documentToSign = "<xml><MyData /></xml>";
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var signXml = api.SignXml(documentToSign);
+    var signedXml = api.SignXml(documentToSign);
 
-    Console.WriteLine(signXml);
+    Console.WriteLine(signedXml);
     try
     {
-        api.VerifyXml(signXml, KalkanSignFlags.DoNotCheckCertificateTime);
+        api.VerifyXml(signedXml);
         Console.WriteLine("XML verified successfully!");
     }
     catch (Exception e)
