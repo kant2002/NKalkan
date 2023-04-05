@@ -1,11 +1,24 @@
 ﻿using NKalcan;
 
-var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
-var certificatePassword = "Qwerty12";
-var documentToSign = "<xml><MyData /></xml>";
-var client = new KalkanApi();
+var api = new KalkanApi();
+LoadCertificateFromStore(api);
+SignXml(api);
 
-client.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-var signXml = client.SignXml(documentToSign);
+void LoadCertificateFromStore(KalkanApi api)
+{
+    api.LoadCertificateFromFile("test_CERT_GOST.txt", KalkanCertificateType.UserCertificate);
+    var certificate = api.ExportCertificateFromStore();
+    Console.WriteLine(certificate);
+}
 
-Console.WriteLine(signXml);
+void SignXml(KalkanApi api)
+{
+    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePassword = "Qwerty12";
+    var documentToSign = "<xml><MyData /></xml>";
+
+    api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
+    var signXml = api.SignXml(documentToSign);
+
+    Console.WriteLine(signXml);
+}

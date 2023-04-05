@@ -13,8 +13,13 @@ internal delegate KalkanError KC_GetLastErrorString(StringBuilder? errorString, 
 internal delegate KalkanError KC_LoadKeyStore(int storage, string password, int passLen, string container, int containerLen, string? alias);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError SignXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId, string? parentSignNode, string? parentNameSpace);
+internal delegate KalkanError KC_SignXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId, string? parentSignNode, string? parentNameSpace);
 
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_X509LoadCertificateFromFile(string certificatePath, int certificateType);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_X509ExportCertificateFromStore(string? alias, int flags, StringBuilder certificateData, ref int certificateDataLength);
 
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct StKCFunctionsType
@@ -23,15 +28,15 @@ internal unsafe struct StKCFunctionsType
     public IntPtr KC_GetTokens;
     public IntPtr KC_GetCertificatesList;
     public KC_LoadKeyStore KC_LoadKeyStore;
-    public IntPtr X509LoadCertificateFromFile;
+    public delegate* unmanaged[Cdecl]<IntPtr, int, KalkanError> X509LoadCertificateFromFile;
     public IntPtr X509LoadCertificateFromBuffer;
-    public IntPtr X509ExportCertificateFromStore;
+    public KC_X509ExportCertificateFromStore X509ExportCertificateFromStore;
     public IntPtr X509CertificateGetInfo;
     public IntPtr X509ValidateCertificate;
     public IntPtr HashData;
     public IntPtr SignHash;
     public IntPtr SignData;
-    public SignXML SignXML;
+    public KC_SignXML SignXML;
     public IntPtr VerifyData;
     public IntPtr VerifyXML;
     public IntPtr KC_getCertFromXML;

@@ -5,6 +5,7 @@ namespace NKalcan;
 
 public sealed class KalkanApi
 {
+    private const int CertificateLength = 32768;
     [DllImport("KalkanCrypt_x64", CallingConvention = CallingConvention.Cdecl)]
     static extern int KC_GetFunctionList(out FunctionsType kc);
 
@@ -30,16 +31,43 @@ public sealed class KalkanApi
         initialized = true;
     }
 
-    public void LoadKeyStore(KalkanStorageType storeType, string containerPath, string password, string? alias = null)
+    public void LoadKeyStore(KalkanStorageType storeType, string containerPath, string password, string? certificateAlias = null)
     {
         EnsureInitialized();
-        var errCode = StKCFunctionsType.KC_LoadKeyStore((int)storeType, password, password.Length, containerPath, containerPath.Length, alias);
+        var errCode = StKCFunctionsType.KC_LoadKeyStore((int)storeType, password, password.Length, containerPath, containerPath.Length, certificateAlias);
         ThrowIfError(errCode);
 
         keyStoreLoaded = true;
     }
 
-    public string SignXml(string content, string? alias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
+    public unsafe void LoadCertificateFromFile(string certificatePath, KalkanCertificateType certificateType)
+    {
+        EnsureInitialized();
+
+        var certificatePathPtr = Marshal.StringToHGlobalAnsi(certificatePath);
+        try
+        {
+            var errorCode = StKCFunctionsType.X509LoadCertificateFromFile(certificatePathPtr, (int)certificateType);
+            ThrowIfError(errorCode);
+            keyStoreLoaded = true;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(certificatePathPtr);
+        }
+    }
+
+    public string ExportCertificateFromStore(string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        int certificateLength = CertificateLength;
+        StringBuilder certificate = new StringBuilder(CertificateLength);
+        var errorCode = StKCFunctionsType.X509ExportCertificateFromStore(certificateAlias, 0, certificate, ref certificateLength);
+        ThrowIfError(errorCode);
+        return certificate.ToString();
+    }
+
+    public string SignXml(string content, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
     {
         EnsureInitialized();
         EnsureKeyStoreLoaded();
@@ -49,14 +77,14 @@ public sealed class KalkanApi
         }
 
         var signedPayloadLength = 0;
-        var errorCode = StKCFunctionsType.SignXML(alias, 0, content, content.Length, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        var errorCode = StKCFunctionsType.SignXML(certificateAlias, 0, content, content.Length, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
         }
 
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignXML(alias, 0, content, content.Length, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        errorCode = StKCFunctionsType.SignXML(certificateAlias, 0, content, content.Length, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
