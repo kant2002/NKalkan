@@ -21,6 +21,9 @@ internal delegate KalkanError KC_X509LoadCertificateFromFile(string certificateP
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_X509ExportCertificateFromStore(string? alias, int flags, StringBuilder certificateData, ref int certificateDataLength);
 
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, int certificateDataLength, int propertyId, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder certificatePropertyData, ref int certificatePropertyDataLength);
+
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct StKCFunctionsType
 {
@@ -31,7 +34,7 @@ internal unsafe struct StKCFunctionsType
     public delegate* unmanaged[Cdecl]<IntPtr, int, KalkanError> X509LoadCertificateFromFile;
     public IntPtr X509LoadCertificateFromBuffer;
     public KC_X509ExportCertificateFromStore X509ExportCertificateFromStore;
-    public IntPtr X509CertificateGetInfo;
+    public KC_X509CertificateGetInfo X509CertificateGetInfo;
     public IntPtr X509ValidateCertificate;
     public IntPtr HashData;
     public IntPtr SignHash;

@@ -67,6 +67,27 @@ public sealed class KalkanApi
         return certificate.ToString();
     }
 
+    public string GetCertificateProperty(string certificate, KalkanCertificateProperty property)
+    {
+        EnsureInitialized();
+        if (certificate is null)
+        {
+            throw new ArgumentNullException(nameof(certificate));
+        }
+
+        int certificateLength = certificate.Length;
+        int certificatePropertyLength = 2048;
+        StringBuilder certificateProperty = new StringBuilder(certificatePropertyLength);
+        var errorCode = StKCFunctionsType.X509CertificateGetInfo(certificate, certificateLength, (int)property, certificateProperty, ref certificatePropertyLength);
+        if (errorCode == KalkanError.GETCERTPROPERR)
+        {
+            return string.Empty;
+        }
+
+        ThrowIfError(errorCode);
+        return certificateProperty.ToString();
+    }
+
     public string SignXml(string content, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
     {
         EnsureInitialized();
