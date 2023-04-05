@@ -1,9 +1,4 @@
-# NKalcan
-
-## Как подписать XML документ?
-
-```csharp
-using NKalcan;
+п»їusing NKalcan;
 
 var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
 var certificatePassword = "Qwerty12";
@@ -14,4 +9,3 @@ client.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePasswo
 var signXml = client.SignXml(documentToSign);
 
 Console.WriteLine(signXml);
-```
