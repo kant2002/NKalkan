@@ -16,7 +16,7 @@ public enum KalkanSignFlags
     OutputBase64	= 0x00000800,
     ProxyOff		= 0x00001000,
     ProxyOn	    	= 0x00002000,
-    ProxyAuth		= 0x00004000,
+    ProxyAuth       = 0x00004000,
     InputFile		= 0x00008000,
     DoNotCheckCertificateTime	= 0x00010000,
     HashSha256		= 0x00020000,

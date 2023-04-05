@@ -60,7 +60,9 @@ void SignData(KalkanApi api)
     var data = Encoding.UTF8.GetBytes(documentToSign); // this is to simulate some byte content
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var signXml = api.SignData(data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem);
+    var signedData = api.SignData(data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem);
 
-    Console.WriteLine(signXml);
+    Console.WriteLine(signedData);
+
+    api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
 }

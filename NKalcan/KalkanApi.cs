@@ -132,6 +132,27 @@ public sealed class KalkanApi
         return signedPayload.ToString();
     }
 
+    public string VerifyData(byte[] content, string inputSignature, KalkanSignFlags flags, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (content is null)
+        {
+            throw new ArgumentNullException(nameof(content));
+        }
+
+        var dataLength = 28000;
+        var verifyInfoLength = 64768;
+        var certificateLength = 64768;
+        var data = new StringBuilder(dataLength);
+        var verifyInfo = new StringBuilder(verifyInfoLength);
+        var certificate = new StringBuilder(certificateLength);
+        var errorCode = StKCFunctionsType.VerifyData(certificateAlias, (int)flags, content, content.Length, inputSignature, inputSignature?.Length ?? 0,
+            data, ref dataLength, verifyInfo, ref verifyInfoLength, 0, certificate, ref certificateLength);
+        ThrowIfError(errorCode);
+        return verifyInfo.ToString();
+    }
+
     private void EnsureKeyStoreLoaded()
     {
         if (!keyStoreLoaded)
