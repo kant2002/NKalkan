@@ -16,6 +16,9 @@ internal delegate KalkanError KC_LoadKeyStore(int storage, string password, int 
 internal delegate KalkanError KC_SignXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId, string? parentSignNode, string? parentNameSpace);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_SignData(string? alias, int flags, byte[] inData, int inDataLength, string inSign, int inSignLength, StringBuilder? outSign, ref int outSignoutSignLength);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_X509LoadCertificateFromFile(string certificatePath, int certificateType);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -38,7 +41,7 @@ internal unsafe struct StKCFunctionsType
     public IntPtr X509ValidateCertificate;
     public IntPtr HashData;
     public IntPtr SignHash;
-    public IntPtr SignData;
+    public KC_SignData SignData;
     public KC_SignXML SignXML;
     public IntPtr VerifyData;
     public IntPtr VerifyXML;

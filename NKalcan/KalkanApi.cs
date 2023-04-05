@@ -88,7 +88,7 @@ public sealed class KalkanApi
         return certificateProperty.ToString();
     }
 
-    public string SignXml(string content, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
+    public string SignXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
     {
         EnsureInitialized();
         EnsureKeyStoreLoaded();
@@ -98,14 +98,36 @@ public sealed class KalkanApi
         }
 
         var signedPayloadLength = 0;
-        var errorCode = StKCFunctionsType.SignXML(certificateAlias, 0, content, content.Length, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        var errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, content.Length, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
         }
 
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignXML(certificateAlias, 0, content, content.Length, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        ThrowIfError(errorCode);
+        return signedPayload.ToString();
+    }
+
+    public string SignData(byte[] content, KalkanSignFlags flags, string? certificateAlias = null, string? inputSignature = null)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (content is null)
+        {
+            throw new ArgumentNullException(nameof(content));
+        }
+
+        var signedPayloadLength = 0;
+        var errorCode = StKCFunctionsType.SignData(certificateAlias, (int)flags, content, content.Length, inputSignature, inputSignature?.Length ?? 0, null, ref signedPayloadLength);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var signedPayload = new StringBuilder(signedPayloadLength);
+        errorCode = StKCFunctionsType.SignData(certificateAlias, (int)flags, content, content.Length, inputSignature, inputSignature?.Length ?? 0, signedPayload, ref signedPayloadLength);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }

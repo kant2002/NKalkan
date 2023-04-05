@@ -1,8 +1,10 @@
 ﻿using NKalcan;
+using System.Text;
 
 var api = new KalkanApi();
 LoadCertificateFromStore(api);
 SignXml(api);
+SignData(api);
 
 void LoadCertificateFromStore(KalkanApi api)
 {
@@ -46,6 +48,19 @@ void SignXml(KalkanApi api)
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
     var signXml = api.SignXml(documentToSign);
+
+    Console.WriteLine(signXml);
+}
+
+void SignData(KalkanApi api)
+{
+    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePassword = "Qwerty12";
+    var documentToSign = "Super important data";
+    var data = Encoding.UTF8.GetBytes(documentToSign); // this is to simulate some byte content
+
+    api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
+    var signXml = api.SignData(data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem);
 
     Console.WriteLine(signXml);
 }
