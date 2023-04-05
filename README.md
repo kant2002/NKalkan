@@ -1,5 +1,7 @@
 ﻿# NKalcan
 
+Библиотека для работы с криптопровайдером АО "НУЦ" [KalkanCrypt](https://pki.gov.kz/developers/)
+
 ## Особенности работы с Windows.
 
 В настройках Windows надо установить системную локаль на Kazakh (Kazakhstan).
@@ -7,6 +9,12 @@
 
 Так как НУЦ не разрешает распространять бинарники, то надо самостоятельно положить KalkanCrypt_x64.dll в папку с конечным исполняемым файлом.
 Как например `NKalcan.TestBed\bin\Debug\net7.0`.
+
+## Поддержка Linux/MacOS
+
+У меня нету Мака, потому есть вероятность что какие то проблемы есть. Если обнаружите баг, то создайте тикет в Гитхабе.
+
+# Примеры использования
 
 ## Подпись XML документа
 
@@ -37,3 +45,42 @@ catch (Exception e)
     Console.WriteLine(e.Message);
 }
 ```
+
+# Реализованные API методы
+
+Если вам нужны определенные методы прямо сейчас, создайте задачу в Гитхабе, и с большой вероятностью вы увидите
+это в следующем релизе.
+
+| Метод | Статус | 
+| ----- | --- |
+| KC_GetTokens     | :white_large_square: |
+| KC_GetCertificatesList     | :white_large_square: |
+| KC_LoadKeyStore     | :white_check_mark: |
+| X509LoadCertificateFromFile     | :white_large_square: |
+| X509LoadCertificateFromBuffer     | :white_large_square: |
+| X509ExportCertificateFromStore     | :white_large_square: |
+| X509CertificateGetInfo     | :white_large_square: |
+| X509ValidateCertificate     | :white_large_square: |
+| HashData     | :white_large_square: |
+| SignHash     | :white_large_square: |
+| SignData     | :white_check_mark: |
+| SignXML     | :white_check_mark: |
+| VerifyData     | :white_check_mark: |
+| VerifyXML     | :white_check_mark: |
+| KC_getCertFromXML     | :white_large_square: |
+| KC_getSigAlgFromXML     | :white_large_square: |
+| KC_GetLastError     | :white_check_mark: |
+| KC_GetLastErrorString     | :white_check_mark: |
+| KC_XMLFinalize     | :white_large_square: |
+| KC_Finalize     | :white_large_square: |
+| KC_TSASetUrl     | :white_large_square: |
+| KC_GetTimeFromSig     | :white_large_square: |
+| KC_SetProxy     | :white_large_square: |
+| KC_GetCertFromCMS     | :white_large_square: |
+| SignWSSE     | :white_large_square: |
+| ZipConVerify     | :white_large_square: |
+| ZipConSign     | :white_large_square: |
+
+# Лицензия
+
+Данное ПО опубликовано под MIT лицензией.

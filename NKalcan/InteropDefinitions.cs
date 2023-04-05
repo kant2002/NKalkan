@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace NKalcan;
@@ -19,7 +20,7 @@ internal delegate KalkanError KC_SignXML(string? alias, int flags, string inData
 internal delegate KalkanError KC_VerifyXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outVerifyInfo, ref int outVerifyInfoLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_SignData(string? alias, int flags, byte[] inData, int inDataLength, string inSign, int inSignLength, StringBuilder? outSign, ref int outSignoutSignLength);
+internal delegate KalkanError KC_SignData(string? alias, int flags, byte[] inData, int inDataLength, string? inSign, int inSignLength, StringBuilder? outSign, ref int outSignoutSignLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_VerifyData(string? alias, int flags, byte[] inData, int inDataLength, string inoutSign, int inoutSignLength, 

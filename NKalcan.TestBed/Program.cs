@@ -11,6 +11,7 @@ void LoadCertificateFromStore(KalkanApi api)
     api.LoadCertificateFromFile("test_CERT_GOST.txt", KalkanCertificateType.UserCertificate);
     var certificate = api.ExportCertificateFromStore();
     Console.WriteLine(certificate);
+
     Console.WriteLine($@"Issuer: {api.GetCertificateProperty(certificate, KalkanCertificateProperty.IssuerCountryName)}
     {api.GetCertificateProperty(certificate, KalkanCertificateProperty.IssuerSOPN)}
     {api.GetCertificateProperty(certificate, KalkanCertificateProperty.IssuerLocalityName)}
