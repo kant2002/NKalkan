@@ -6,6 +6,8 @@ LoadCertificateFromStore(api);
 SignXml(api);
 SignData(api);
 SignWsse(api);
+HashData(api);
+HashDataFromFile(api);
 
 void LoadCertificateFromStore(KalkanApi api)
 {
@@ -109,6 +111,39 @@ void SignData(KalkanApi api)
 
     Console.WriteLine(signedData);
 
+    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+    // Console.WriteLine("Data verified successfully!");
+}
+
+void HashData(KalkanApi api)
+{
+    Console.WriteLine("Testing data hashing");
+    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePassword = "Qwerty12";
+    var documentToHash = "Super important data122222ds ahdhasdhasd asdas das d asd asd adsa das dasd asd asd";
+    var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
+
+    api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
+    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputBase64);
+
+    Console.WriteLine(hashedData);
+
+    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+    // Console.WriteLine("Data verified successfully!");
+}
+
+void HashDataFromFile(KalkanApi api)
+{
+    Console.WriteLine("Testing hashing file content");
+    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePassword = "Qwerty12";
+    var documentToHash = "Super important data122222ds ahdhasdhasd asdas das d asd asd adsa das dasd asd asd";
+    var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
+
+    api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
+    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, certificatePath, KalkanSignFlags.SignCms | KalkanSignFlags.InputFile | KalkanSignFlags.OutputBase64);
+
+    Console.WriteLine(hashedData);
     // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
     // Console.WriteLine("Data verified successfully!");
 }
