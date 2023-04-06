@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -52,6 +53,38 @@ public sealed class KalkanApi
         ThrowIfError(errCode);
 
         keyStoreLoaded = true;
+    }
+
+    public void LoadKeyStore(KalkanStorageType storeType, byte[] containerContent, string password, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        var tempFile = Path.GetTempFileName();
+        File.WriteAllBytes(tempFile, containerContent);
+        var errCode = StKCFunctionsType.KC_LoadKeyStore((int)storeType, password, password.Length, tempFile, tempFile.Length, certificateAlias);
+        ThrowIfError(errCode);
+
+        keyStoreLoaded = true;
+    }
+
+    public void LoadKeyStore(KalkanStorageType storeType, Stream containerContent, string password, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        var tempFile = Path.GetTempFileName();
+        using (var file = File.OpenWrite(tempFile))
+        {
+            containerContent.CopyTo(file);
+        }
+
+        var errCode = StKCFunctionsType.KC_LoadKeyStore((int)storeType, password, password.Length, tempFile, tempFile.Length, certificateAlias);
+        ThrowIfError(errCode);
+
+        keyStoreLoaded = true;
+    }
+
+    public void LoadKeyStoreFromBase64(KalkanStorageType storeType, string containerContentBase64, string password, string? certificateAlias = null)
+    {
+        byte[] containerContent = Convert.FromBase64String(containerContentBase64);
+        LoadKeyStore(storeType, containerContent, password, certificateAlias);
     }
 
     public unsafe void LoadCertificateFromFile(string certificatePath, KalkanCertificateType certificateType)

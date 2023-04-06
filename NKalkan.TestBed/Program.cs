@@ -8,6 +8,7 @@ SignData(api);
 SignWsse(api);
 HashData(api);
 HashDataFromFile(api);
+LoadKeyStoreFromMemory(api);
 
 void LoadCertificateFromStore(KalkanApi api)
 {
@@ -152,4 +153,21 @@ void HashDataFromFile(KalkanApi api)
     var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, certificatePath, KalkanSignFlags.SignCms | KalkanSignFlags.InputFile | KalkanSignFlags.OutputBase64);
 
     Console.WriteLine(hashedData);
+}
+
+void LoadKeyStoreFromMemory(KalkanApi api)
+{
+    Console.WriteLine("Loading key from memory");
+    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePassword = "Qwerty12";
+
+    api.LoadKeyStore(KalkanStorageType.PKCS12, File.ReadAllBytes(certificatePath), certificatePassword);
+    Console.WriteLine("Key store from binary data loaded.");
+
+    api.LoadKeyStoreFromBase64(KalkanStorageType.PKCS12, Convert.ToBase64String(File.ReadAllBytes(certificatePath)), certificatePassword);
+    Console.WriteLine("Key store from base64 data loaded.");
+
+    using var stream = File.OpenRead(certificatePath);
+    api.LoadKeyStore(KalkanStorageType.PKCS12, stream, certificatePassword);
+    Console.WriteLine("Key store from from stream loaded.");
 }

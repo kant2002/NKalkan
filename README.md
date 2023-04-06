@@ -57,6 +57,29 @@ catch (Exception e)
 }
 ```
 
+## Загрузка ключа из памяти
+
+Загрузка из массива байт
+
+```csharp
+var certificateBytes = File.ReadAllBytes(certificatePath);
+api.LoadKeyStore(KalkanStorageType.PKCS12, certificateBytes, certificatePassword);
+```
+
+Загрузка из потока
+
+```csharp
+using var stream = File.OpenRead(certificatePath);
+api.LoadKeyStore(KalkanStorageType.PKCS12, stream, certificatePassword);
+```
+
+Загрузка из массива байт
+
+```csharp
+var base64Content = Convert.ToBase64String(File.ReadAllBytes(certificatePath));
+api.LoadKeyStoreFromBase64(KalkanStorageType.PKCS12, base64Content, certificatePassword);
+```
+
 # Реализованные API методы
 
 Если вам нужны определенные методы прямо сейчас, создайте задачу в Гитхабе, и с большой вероятностью вы увидите
