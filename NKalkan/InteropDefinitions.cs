@@ -54,7 +54,7 @@ internal unsafe struct StKCFunctionsType
     public KC_X509CertificateGetInfo X509CertificateGetInfo;
     public IntPtr X509ValidateCertificate;
     public KC_HashData HashData;
-    public IntPtr SignHash;
+    public KC_HashData SignHash;
     public KC_SignData SignData;
     public KC_SignXML SignXML;
     public KC_VerifyData VerifyData;

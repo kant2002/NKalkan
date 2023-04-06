@@ -232,6 +232,12 @@ public sealed class KalkanApi
 
     public string HashData(string algorithm, string fileName, KalkanSignFlags flags = 0)
     {
+        var fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+        return HashData(algorithm, fileNameBytes, flags);
+    }
+
+    public string SignHash(string algorithm, byte[] content, KalkanSignFlags flags = 0)
+    {
         EnsureInitialized();
         EnsureKeyStoreLoaded();
         if (algorithm is null)
@@ -239,25 +245,20 @@ public sealed class KalkanApi
             throw new ArgumentNullException(nameof(algorithm));
         }
 
-        if (fileName is null)
+        if (content is null)
         {
-            throw new ArgumentNullException(nameof(fileName));
+            throw new ArgumentNullException(nameof(content));
         }
 
         var signedPayloadLength = 0;
-        var fileNameBytes = Encoding.UTF8.GetBytes(fileName);
-        var errorCode = StKCFunctionsType.HashData(algorithm, (int)flags, fileNameBytes, fileNameBytes.Length, null, ref signedPayloadLength);
+        var errorCode = StKCFunctionsType.SignHash(algorithm, (int)flags, content, content.Length, null, ref signedPayloadLength);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
         }
 
-        // This is magic number which seems to be required.
-        // even if actual produced base64 string would be of size signedPayloadLength
-        // without padding with this 20 bytes I always receive BUFFER_TOO_SMALL.
-        signedPayloadLength = signedPayloadLength + 20;
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.HashData(algorithm, (int)flags, fileNameBytes, fileNameBytes.Length, signedPayload, ref signedPayloadLength);
+        errorCode = StKCFunctionsType.SignHash(algorithm, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }

@@ -111,8 +111,15 @@ void SignData(KalkanApi api)
 
     Console.WriteLine(signedData);
 
-    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
-    // Console.WriteLine("Data verified successfully!");
+    try
+    {
+        api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+        Console.WriteLine("Data verified successfully!");
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
 }
 
 void HashData(KalkanApi api)
@@ -127,9 +134,10 @@ void HashData(KalkanApi api)
     var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputBase64);
 
     Console.WriteLine(hashedData);
+    
+    var signedHash = api.SignHash(KalkanHashAlgorithm.Gost95, Encoding.UTF8.GetBytes(hashedData), KalkanSignFlags.SignCms | KalkanSignFlags.InputBase64 | KalkanSignFlags.OutputPem);
 
-    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
-    // Console.WriteLine("Data verified successfully!");
+    Console.WriteLine(signedHash);
 }
 
 void HashDataFromFile(KalkanApi api)
@@ -144,6 +152,4 @@ void HashDataFromFile(KalkanApi api)
     var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, certificatePath, KalkanSignFlags.SignCms | KalkanSignFlags.InputFile | KalkanSignFlags.OutputBase64);
 
     Console.WriteLine(hashedData);
-    // api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
-    // Console.WriteLine("Data verified successfully!");
 }
