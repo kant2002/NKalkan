@@ -70,8 +70,8 @@ catch (Exception e)
 | X509ExportCertificateFromStore     | :white_large_square: |
 | X509CertificateGetInfo     | :white_large_square: |
 | X509ValidateCertificate     | :white_large_square: |
-| HashData     | :white_large_square: |
-| SignHash     | :white_large_square: |
+| HashData     | :white_check_mark: |
+| SignHash     | :white_check_mark: |
 | SignData     | :white_check_mark: |
 | SignXML     | :white_check_mark: |
 | VerifyData     | :white_check_mark: |
@@ -86,7 +86,7 @@ catch (Exception e)
 | KC_GetTimeFromSig     | :white_large_square: |
 | KC_SetProxy     | :white_large_square: |
 | KC_GetCertFromCMS     | :white_large_square: |
-| SignWSSE     | :white_large_square: |
+| SignWSSE     | :white_check_mark: |
 | ZipConVerify     | :white_large_square: |
 | ZipConSign     | :white_large_square: |
 
