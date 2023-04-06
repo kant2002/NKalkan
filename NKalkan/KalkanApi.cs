@@ -172,6 +172,33 @@ public sealed class KalkanApi
         return verifyInfo.ToString();
     }
 
+    public string SignWsse(string content, string? signNodeId, KalkanSignFlags flags = 0, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (signNodeId is null)
+        {
+            throw new ArgumentNullException(nameof(signNodeId));
+        }
+
+        var documentToSign = $"""
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+    <s:Body wsu:id="{signNodeId}">{content}</s:Body>
+</s:Envelope>
+""";
+        var signedPayloadLength = 0;
+        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSign.Length, null, ref signedPayloadLength, signNodeId);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var signedPayload = new StringBuilder(signedPayloadLength);
+        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSign.Length, signedPayload, ref signedPayloadLength, signNodeId);
+        ThrowIfError(errorCode);
+        return signedPayload.ToString();
+    }
+
     private void EnsureKeyStoreLoaded()
     {
         if (!keyStoreLoaded)

@@ -35,6 +35,9 @@ internal delegate KalkanError KC_X509ExportCertificateFromStore(string? alias, i
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, int certificateDataLength, int propertyId, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder certificatePropertyData, ref int certificatePropertyDataLength);
 
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);
+
 [StructLayout(LayoutKind.Sequential)]
 internal unsafe struct StKCFunctionsType
 {
@@ -57,13 +60,13 @@ internal unsafe struct StKCFunctionsType
     public IntPtr KC_getSigAlgFromXML;
     public KC_GetLastError KC_GetLastError;
     public KC_GetLastErrorString KC_GetLastErrorString;
-    public IntPtr KC_XMLFinalize;
-    public IntPtr KC_Finalize;
+    public delegate* unmanaged[Cdecl]<void> KC_XMLFinalize;
+    public delegate* unmanaged[Cdecl]<void> KC_Finalize;
     public IntPtr KC_TSASetUrl;
     public IntPtr KC_GetTimeFromSig;
     public IntPtr KC_SetProxy;
     public IntPtr KC_GetCertFromCMS;
-    public IntPtr SignWSSE;
+    public KC_SignWSSE SignWSSE;
     public IntPtr ZipConVerify;
     public IntPtr ZipConSign;
 }
