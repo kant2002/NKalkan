@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKalkan", "NKalkan\NKalkan.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C8AAC513-74D3-4C94-9540-AA1BC4289AD3}"
 	ProjectSection(SolutionItems) = preProject
+		ld.kalkan.conf = ld.kalkan.conf
 		README.md = README.md
+		setup.sh = setup.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKalkan.TestBed", "NKalkan.TestBed\NKalkan.TestBed.csproj", "{308E5D14-AD0B-4DBC-9EF1-BE387A9BAB9C}"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -16,6 +17,18 @@ public sealed class KalkanApi
 
     static unsafe KalkanApi()
     {
+#if NETCOREAPP3_0_OR_GREATER
+        NativeLibrary.SetDllImportResolver(typeof(KalkanApi).Assembly, (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
+        {
+            if (NativeLibrary.TryLoad("libkalkancryptwr-64.so", out var kalkanLib))
+            {
+                return kalkanLib;
+            }
+
+            return IntPtr.Zero;
+        });
+#endif
+
         int result = KC_GetFunctionList(out var functionsType);
         if (result != 0)
         {
