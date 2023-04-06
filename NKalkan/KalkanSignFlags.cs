@@ -1,4 +1,4 @@
-﻿namespace NKalcan;
+﻿namespace NKalkan;
 
 public enum KalkanSignFlags
 {

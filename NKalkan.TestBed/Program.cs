@@ -1,4 +1,4 @@
-﻿using NKalcan;
+﻿using NKalkan;
 using System.Text;
 
 var api = new KalkanApi();

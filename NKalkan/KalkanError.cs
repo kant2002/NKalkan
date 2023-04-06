@@ -1,4 +1,4 @@
-﻿namespace NKalcan;
+﻿namespace NKalkan;
 
 internal enum KalkanError : ulong
 {

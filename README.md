@@ -19,7 +19,7 @@
 ## Подпись XML документа
 
 ```csharp
-using NKalcan;
+using NKalkan;
 
 var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
 var certificatePassword = "Qwerty12";

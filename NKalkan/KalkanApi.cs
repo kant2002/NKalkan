@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace NKalcan;
+namespace NKalkan;
 
 public sealed class KalkanApi
 {
