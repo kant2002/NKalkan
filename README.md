@@ -57,6 +57,37 @@ catch (Exception e)
 }
 ```
 
+## Формирование CMS
+
+```csharp
+using NKalkan;
+
+var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+var certificatePassword = "Qwerty12";
+var documentToSign = "<xml><MyData /></xml>";
+var data = Encoding.UTF8.GetBytes(documentToSign);
+var client = new KalkanApi();
+
+client.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
+var signedData = client.SignData(documentToSign, KalkanSignType.Cms, KalkanInputFormat.Pem, KalkanOutputFormat.Pem);
+
+Console.WriteLine(signedData);
+```
+
+## Проверка CMS
+
+```csharp
+try
+{
+    api.VerifyData(data, signedData, KalkanSignType.Cms, KalkanInputFormat.Pem, KalkanOutputFormat.Pem);
+    Console.WriteLine("Data verified successfully!");
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.Message);
+}
+```
+
 ## Загрузка ключа из памяти
 
 Загрузка из массива байт

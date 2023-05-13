@@ -108,19 +108,19 @@ void SignData(KalkanApi api)
     var data = Encoding.UTF8.GetBytes(documentToSign); // this is to simulate some byte content
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var signedData = api.SignData(data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem);
+    var signedData = api.SignData(data, KalkanSignType.Cms, KalkanInputFormat.Pem, KalkanOutputFormat.Pem);
 
     Console.WriteLine(signedData);
 
-    try
-    {
-        api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
-        Console.WriteLine("Data verified successfully!");
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine(e.Message);
-    }
+try
+{
+    api.VerifyData(data, signedData, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputPem | KalkanSignFlags.DoNotCheckCertificateTime);
+    Console.WriteLine("Data verified successfully!");
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.Message);
+}
 }
 
 void HashData(KalkanApi api)
@@ -132,11 +132,11 @@ void HashData(KalkanApi api)
     var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, data, KalkanSignFlags.SignCms | KalkanSignFlags.InputPem | KalkanSignFlags.OutputBase64);
+    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, data, KalkanSignType.Cms, KalkanInputFormat.Pem, KalkanOutputFormat.Base64);
 
     Console.WriteLine(hashedData);
     
-    var signedHash = api.SignHash(KalkanHashAlgorithm.Gost95, Encoding.UTF8.GetBytes(hashedData), KalkanSignFlags.SignCms | KalkanSignFlags.InputBase64 | KalkanSignFlags.OutputPem);
+    var signedHash = api.SignHash(KalkanHashAlgorithm.Gost95, Encoding.UTF8.GetBytes(hashedData), KalkanSignType.Cms, KalkanInputFormat.Base64, KalkanOutputFormat.Pem);
 
     Console.WriteLine(signedHash);
 }
@@ -150,7 +150,7 @@ void HashDataFromFile(KalkanApi api)
     var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, certificatePath, KalkanSignFlags.SignCms | KalkanSignFlags.InputFile | KalkanSignFlags.OutputBase64);
+    var hashedData = api.HashData(KalkanHashAlgorithm.Gost95, certificatePath, KalkanSignType.Cms, KalkanInputFormat.File, KalkanOutputFormat.Base64);
 
     Console.WriteLine(hashedData);
 }

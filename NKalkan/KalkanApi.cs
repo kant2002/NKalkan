@@ -175,6 +175,60 @@ public sealed class KalkanApi
         return signedPayload.ToString();
     }
 
+    public string SignData(byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat, string? certificateAlias = null, string? inputSignature = null)
+    {
+        KalkanSignFlags flags = default;
+        switch (signType)
+        {
+            case KalkanSignType.Draft:
+                flags |= KalkanSignFlags.SignDraft;
+                break;
+            case KalkanSignType.Cms:
+                flags |= KalkanSignFlags.SignCms;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(signType));
+        }
+
+        switch (inputFormat)
+        {
+            case KalkanInputFormat.Der:
+                flags |= KalkanSignFlags.InputDer;
+                break;
+            case KalkanInputFormat.Pem:
+                flags |= KalkanSignFlags.InputPem;
+                break;
+            case KalkanInputFormat.Base64:
+                flags |= KalkanSignFlags.InputBase64;
+                break;
+            case KalkanInputFormat.Base64Variant2:
+                flags |= KalkanSignFlags.Input2Base64;
+                break;
+            case KalkanInputFormat.File:
+                flags |= KalkanSignFlags.InputFile;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(inputFormat));
+        }
+
+        switch (outputFormat)
+        {
+            case KalkanOutputFormat.Der:
+                flags |= KalkanSignFlags.OutputDer;
+                break;
+            case KalkanOutputFormat.Pem:
+                flags |= KalkanSignFlags.OutputPem;
+                break;
+            case KalkanOutputFormat.Base64:
+                flags |= KalkanSignFlags.OutputBase64;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(outputFormat));
+        }
+
+        return SignData(content, flags, certificateAlias, inputSignature);
+    }
+
     public string SignData(byte[] content, KalkanSignFlags flags, string? certificateAlias = null, string? inputSignature = null)
     {
         EnsureInitialized();
@@ -195,6 +249,60 @@ public sealed class KalkanApi
         errorCode = StKCFunctionsType.SignData(certificateAlias, (int)flags, content, content.Length, inputSignature, inputSignature?.Length ?? 0, signedPayload, ref signedPayloadLength);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
+    }
+
+    public string VerifyData(byte[] content, string inputSignature, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat, string? certificateAlias = null)
+    {
+        KalkanSignFlags flags = default;
+        switch (signType)
+        {
+            case KalkanSignType.Draft:
+                flags |= KalkanSignFlags.SignDraft;
+                break;
+            case KalkanSignType.Cms:
+                flags |= KalkanSignFlags.SignCms;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(signType));
+        }
+
+        switch (inputFormat)
+        {
+            case KalkanInputFormat.Der:
+                flags |= KalkanSignFlags.InputDer;
+                break;
+            case KalkanInputFormat.Pem:
+                flags |= KalkanSignFlags.InputPem;
+                break;
+            case KalkanInputFormat.Base64:
+                flags |= KalkanSignFlags.InputBase64;
+                break;
+            case KalkanInputFormat.Base64Variant2:
+                flags |= KalkanSignFlags.Input2Base64;
+                break;
+            case KalkanInputFormat.File:
+                flags |= KalkanSignFlags.InputFile;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(inputFormat));
+        }
+
+        switch (outputFormat)
+        {
+            case KalkanOutputFormat.Der:
+                flags |= KalkanSignFlags.OutputDer;
+                break;
+            case KalkanOutputFormat.Pem:
+                flags |= KalkanSignFlags.OutputPem;
+                break;
+            case KalkanOutputFormat.Base64:
+                flags |= KalkanSignFlags.OutputBase64;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(outputFormat));
+        }
+
+        return VerifyData(content, inputSignature, flags, certificateAlias);
     }
 
     public string VerifyData(byte[] content, string inputSignature, KalkanSignFlags flags, string? certificateAlias = null)
@@ -245,6 +353,60 @@ public sealed class KalkanApi
         return signedPayload.ToString();
     }
 
+    public string HashData(string algorithm, byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
+    {
+        KalkanSignFlags flags = default;
+        switch (signType)
+        {
+            case KalkanSignType.Draft:
+                flags |= KalkanSignFlags.SignDraft;
+                break;
+            case KalkanSignType.Cms:
+                flags |= KalkanSignFlags.SignCms;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(signType));
+        }
+
+        switch (inputFormat)
+        {
+            case KalkanInputFormat.Der:
+                flags |= KalkanSignFlags.InputDer;
+                break;
+            case KalkanInputFormat.Pem:
+                flags |= KalkanSignFlags.InputPem;
+                break;
+            case KalkanInputFormat.Base64:
+                flags |= KalkanSignFlags.InputBase64;
+                break;
+            case KalkanInputFormat.Base64Variant2:
+                flags |= KalkanSignFlags.Input2Base64;
+                break;
+            case KalkanInputFormat.File:
+                flags |= KalkanSignFlags.InputFile;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(inputFormat));
+        }
+
+        switch (outputFormat)
+        {
+            case KalkanOutputFormat.Der:
+                flags |= KalkanSignFlags.OutputDer;
+                break;
+            case KalkanOutputFormat.Pem:
+                flags |= KalkanSignFlags.OutputPem;
+                break;
+            case KalkanOutputFormat.Base64:
+                flags |= KalkanSignFlags.OutputBase64;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(outputFormat));
+        }
+
+        return HashData(algorithm, content, flags);
+    }
+
     public string HashData(string algorithm, byte[] content, KalkanSignFlags flags = 0)
     {
         EnsureInitialized();
@@ -276,10 +438,70 @@ public sealed class KalkanApi
         return signedPayload.ToString();
     }
 
+    public string HashData(string algorithm, string fileName, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
+    {
+        var fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+        return HashData(algorithm, fileNameBytes, signType, inputFormat, outputFormat);
+    }
+
     public string HashData(string algorithm, string fileName, KalkanSignFlags flags = 0)
     {
         var fileNameBytes = Encoding.UTF8.GetBytes(fileName);
         return HashData(algorithm, fileNameBytes, flags);
+    }
+
+    public string SignHash(string algorithm, byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
+    {
+        KalkanSignFlags flags = default;
+        switch (signType)
+        {
+            case KalkanSignType.Draft:
+                flags |= KalkanSignFlags.SignDraft;
+                break;
+            case KalkanSignType.Cms:
+                flags |= KalkanSignFlags.SignCms;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(signType));
+        }
+
+        switch (inputFormat)
+        {
+            case KalkanInputFormat.Der:
+                flags |= KalkanSignFlags.InputDer;
+                break;
+            case KalkanInputFormat.Pem:
+                flags |= KalkanSignFlags.InputPem;
+                break;
+            case KalkanInputFormat.Base64:
+                flags |= KalkanSignFlags.InputBase64;
+                break;
+            case KalkanInputFormat.Base64Variant2:
+                flags |= KalkanSignFlags.Input2Base64;
+                break;
+            case KalkanInputFormat.File:
+                flags |= KalkanSignFlags.InputFile;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(inputFormat));
+        }
+
+        switch (outputFormat)
+        {
+            case KalkanOutputFormat.Der:
+                flags |= KalkanSignFlags.OutputDer;
+                break;
+            case KalkanOutputFormat.Pem:
+                flags |= KalkanSignFlags.OutputPem;
+                break;
+            case KalkanOutputFormat.Base64:
+                flags |= KalkanSignFlags.OutputBase64;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(outputFormat));
+        }
+
+        return SignHash(algorithm, content, flags);
     }
 
     public string SignHash(string algorithm, byte[] content, KalkanSignFlags flags = 0)
