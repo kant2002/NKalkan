@@ -1,4 +1,5 @@
 ﻿using NKalkan;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 var api = new KalkanApi();
@@ -49,17 +50,43 @@ Validity:
 void SignXml(KalkanApi api)
 {
     Console.WriteLine("Testing XML signing");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
     var certificatePassword = "Qwerty12";
     var documentToSign = "<xml><MyData /></xml>";
-
+    var messageBody = $"""
+<?xml version="1.0" encoding="UTF-8"?>
+<sendMessageRequest>
+    <request>
+        <requestInfo>
+            <messageId>0f3d8368-215a-4a20-a306-5222548f5e87</messageId>
+            <serviceId>ServiceID</serviceId>
+            <sessionId>4958523f-423a-45bb-1aa1-5222548f5e87</sessionId>
+            <messageDate>2018-12-11T11:45:12.574+06:00</messageDate>
+            <sender>
+                <senderId>login</senderId>
+                <password>password</password>
+            </sender>
+        </requestInfo>
+        <requestData>
+            <data>
+                    <uin>810918350135</uin>
+                    <company>{XmlEscape("ЗАО Складские решения")}</company>
+                    <company_bin>12345678</company_bin>
+                    <expiresIn>600000</expiresIn>
+                    <omit-sms>false</omit-sms>
+            </data>
+        </requestData>
+    </request>
+</sendMessageRequest>
+""";
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
-    var signedXml = api.SignXml(documentToSign);
+    var signedXml = api.SignXml(messageBody);
 
     Console.WriteLine(signedXml);
     try
     {
-        api.VerifyXml(signedXml);
+        var normalized = XmlEscape(signedXml);
+        api.VerifyXml(normalized);
         Console.WriteLine("XML verified successfully!");
     }
     catch (Exception e)
@@ -68,20 +95,29 @@ void SignXml(KalkanApi api)
     }
 }
 
+[return: NotNullIfNotNull(nameof(s))]
+static string? XmlEscape(string? s)
+{
+    if (string.IsNullOrEmpty(s))
+        return s;
+
+    return string.Join("", s.Select(c => c < 127 ? c.ToString() : "&#" + (short)c + ";"));
+}
+
 void SignWsse(KalkanApi api)
 {
     Console.WriteLine("Testing WSSE signing");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
     var certificatePassword = "Qwerty12";
     var messageId = "123";
-    var messageBody = """
+    var messageBody = $"""
 <ContactQueryPage_Input xmlns="urn:crmondemand/ws/ecbs/contact/10/2004">
         <ListOfContact xmlns="urn:/crmondemand/xml/Contact/Query">
         <Contact>
-            <Id>1-asdfd</Id>
+            <Id>{XmlEscape("1-фывфыв")}</Id>
         </Contact>
         </ListOfContact>
-    </ContactQueryPage_Input>
+</ContactQueryPage_Input>
 """;
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, certificatePath, certificatePassword);
@@ -90,7 +126,8 @@ void SignWsse(KalkanApi api)
     Console.WriteLine(signedXml);
     try
     {
-        api.VerifyXml(signedXml);
+        var normalized = XmlEscape(signedXml);
+        api.VerifyXml(normalized);
         Console.WriteLine("XML verified successfully!");
     }
     catch (Exception e)
@@ -102,7 +139,7 @@ void SignWsse(KalkanApi api)
 void SignData(KalkanApi api)
 {
     Console.WriteLine("Testing plain data signing");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
     var certificatePassword = "Qwerty12";
     var documentToSign = "Super important data";
     var data = Encoding.UTF8.GetBytes(documentToSign); // this is to simulate some byte content

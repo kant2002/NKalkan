@@ -150,7 +150,8 @@ public sealed class KalkanApi
         }
 
         var signedPayloadLength = 0;
-        var errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, content.Length, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        var contentLength = Encoding.UTF8.GetByteCount(content);
+        var errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, contentLength, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
@@ -168,7 +169,8 @@ public sealed class KalkanApi
         EnsureKeyStoreLoaded();
 
         var signedPayloadLength = 0;
-        var errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, content.Length, null, ref signedPayloadLength);
+        var contentLength = Encoding.UTF8.GetByteCount(content);
+        var errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, contentLength, null, ref signedPayloadLength);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
@@ -346,7 +348,8 @@ public sealed class KalkanApi
 </s:Envelope>
 """;
         var signedPayloadLength = 0;
-        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSign.Length, null, ref signedPayloadLength, signNodeId);
+        var documentToSignLength = Encoding.UTF8.GetByteCount(documentToSign);
+        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSignLength, null, ref signedPayloadLength, signNodeId);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
