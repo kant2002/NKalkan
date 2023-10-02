@@ -26,6 +26,11 @@ public sealed class KalkanApi
                 return kalkanLib;
             }
 
+            if (NativeLibrary.TryLoad("KalkanCrypt.dll", out var kalkanLibDll))
+            {
+                return kalkanLibDll;
+            }
+
             return IntPtr.Zero;
         });
 #endif
