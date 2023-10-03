@@ -158,7 +158,7 @@ public sealed class KalkanApi
         }
 
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, contentLength, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
@@ -177,7 +177,7 @@ public sealed class KalkanApi
         }
 
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength);
+        errorCode = StKCFunctionsType.VerifyXML(certificateAlias, (int)flags, content, contentLength, signedPayload, ref signedPayloadLength);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
@@ -356,7 +356,7 @@ public sealed class KalkanApi
         }
 
         var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSign.Length, signedPayload, ref signedPayloadLength, signNodeId);
+        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
