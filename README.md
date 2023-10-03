@@ -27,6 +27,54 @@
 
 # Примеры использования
 
+* [Подпись XML документа](#подпись-xml-документа)
+* [Проверка XML документа](#проверка-xml-документа)
+* [Формирование CMS](#формирование-cms)
+* [Проверка CMS](#проверка-cms)
+* [Загрузка ключа из памяти](#загрузка-ключа-из-памяти)
+
+## Работа с казахскими символами
+
+Для работы с XML содержащим кириллицу или казахские символы надо делать XML-эскейпинг. Пример функции и использования:
+
+```csharp
+[return: NotNullIfNotNull(nameof(s))]
+static string? XmlEscape(string? s)
+{
+    if (string.IsNullOrEmpty(s))
+        return s;
+
+    return string.Join("", s.Select(c => c < 127 ? c.ToString() : "&#" + (short)c + ";"));
+}
+
+    var messageBody = $"""
+<?xml version="1.0" encoding="UTF-8"?>
+<sendMessageRequest>
+    <request>
+        <requestInfo>
+            <messageId>0f3d8368-215a-4a20-a306-5222548f5e87</messageId>
+            <serviceId>ServiceID</serviceId>
+            <sessionId>4958523f-423a-45bb-1aa1-5222548f5e87</sessionId>
+            <messageDate>2018-12-11T11:45:12.574+06:00</messageDate>
+            <sender>
+                <senderId>login</senderId>
+                <password>password</password>
+            </sender>
+        </requestInfo>
+        <requestData>
+            <data>
+                    <uin>810918350135</uin>
+                    <company>{XmlEscape("ЗАО Складские решения")}</company>
+                    <company_bin>12345678</company_bin>
+                    <expiresIn>600000</expiresIn>
+                    <omit-sms>false</omit-sms>
+            </data>
+        </requestData>
+    </request>
+</sendMessageRequest>
+""";
+```
+
 ## Подпись XML документа
 
 ```csharp
