@@ -8,7 +8,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <Version>0.3.0</Version>
-    <Description>Библиотека для работы с криптопровайдером АО "НУЦ" KalkanCrypt</Description>
+    <Description>Кросплатформенная библиотека для работы с криптопровайдером АО "НУЦ" KalkanCrypt</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
