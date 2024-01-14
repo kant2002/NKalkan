@@ -4,12 +4,12 @@ using System.Text;
 
 var api = new KalkanApi();
 LoadCertificateFromStore(api);
-//SignXml(api);
-//SignData(api);
-//SignWsse(api);
-//HashData(api);
-//HashDataFromFile(api);
-//LoadKeyStoreFromMemory(api);
+SignXml(api);
+SignData(api);
+SignWsse(api);
+HashData(api);
+HashDataFromFile(api);
+LoadKeyStoreFromMemory(api);
 ValidateCertificate(api);
 
 void LoadCertificateFromStore(KalkanApi api)
