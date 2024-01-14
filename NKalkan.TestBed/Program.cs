@@ -10,6 +10,7 @@ SignWsse(api);
 HashData(api);
 HashDataFromFile(api);
 LoadKeyStoreFromMemory(api);
+ValidateCertificate(api);
 
 void LoadCertificateFromStore(KalkanApi api)
 {
@@ -50,7 +51,8 @@ Validity:
 void SignXml(KalkanApi api)
 {
     Console.WriteLine("Testing XML signing");
-    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
+    // Keys and Certs\Gost2004 and RSA\2023.11.17_valid\Физическое лицо\valid\
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
     var documentToSign = "<xml><MyData /></xml>";
     var messageBody = $"""
@@ -207,4 +209,12 @@ void LoadKeyStoreFromMemory(KalkanApi api)
     using var stream = File.OpenRead(certificatePath);
     api.LoadKeyStore(KalkanStorageType.PKCS12, stream, certificatePassword);
     Console.WriteLine("Key store from from stream loaded.");
+}
+
+void ValidateCertificate(KalkanApi api)
+{
+    api.LoadCertificateFromFile("test_CERT_GOST.txt", KalkanCertificateType.UserCertificate);
+    var certificate = api.ExportCertificateFromStore();
+    api.ValidateCertificateOscp(certificate, false, out var outputInformation, out var ospResponse);
+    Console.WriteLine($"Output information:\n{outputInformation}\nOSP Response:\n{ospResponse}");
 }

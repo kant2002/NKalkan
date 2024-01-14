@@ -140,6 +140,48 @@ public sealed class KalkanApi
         return certificateProperty.ToString();
     }
 
+    public void ValidateCertificateOscp(string certificate, out string outputInformation, out string ospResponse)
+    {
+        ValidateCertificateOscp(certificate, true, out outputInformation, out ospResponse);
+    }
+
+    public void ValidateCertificateOscp(string certificate, bool checkCertificateTime, out string outputInformation, out string ospResponse)
+    {
+        ValidateCertificate(certificate, KalkanValidationType.Ocsp, "http://ocsp.pki.gov.kz/", checkCertificateTime, true, out outputInformation, out ospResponse);
+    }
+
+    public void ValidateCertificateOscp(string certificate, out string outputInformation)
+    {
+        ValidateCertificateOscp(certificate, true, out outputInformation);
+    }
+
+    public void ValidateCertificateOscp(string certificate, bool checkCertificateTime, out string outputInformation)
+    {
+        ValidateCertificate(certificate, KalkanValidationType.Ocsp, "http://ocsp.pki.gov.kz/", checkCertificateTime, false, out outputInformation, out var ospResponse);
+    }
+
+    public void ValidateCertificate(string certificate, KalkanValidationType validationType, string validPath, bool checkCertificateTime, bool getOscpResponse, out string outputInformation, out string ospResponse)
+    {
+        EnsureInitialized();
+        if (certificate is null)
+        {
+            throw new ArgumentNullException(nameof(certificate));
+        }
+
+        int certificateLength = certificate.Length;
+        int outputInformationLength = 8192;
+        StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
+        int ospResponseLength = 8192;
+        StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
+        const int KC_NOCHECKCERTTIME = 0x00010000;
+        const int KC_GET_OCSP_RESPONSE = 0x00080000;
+        int flag = (checkCertificateTime ? 0 : KC_NOCHECKCERTTIME) + (getOscpResponse ? KC_GET_OCSP_RESPONSE : 0);
+        var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformationBuilder, ref outputInformationLength, flag, ospResponseBuilder, ref ospResponseLength);
+        ThrowIfError(errorCode);
+        outputInformation = outputInformationBuilder.ToString();
+        ospResponse = ospResponseBuilder.ToString();
+    }
+
     public string SignXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
     {
         EnsureInitialized();
@@ -537,6 +579,55 @@ public sealed class KalkanApi
         errorCode = StKCFunctionsType.SignHash(algorithm, (int)flags, content, content.Length, signedPayload, ref signedPayloadLength);
         ThrowIfError(errorCode);
         return signedPayload.ToString();
+    }
+
+    public string GetCertificateFromXml(string? xmlString)
+    {
+        return GetCertificateFromXml(xmlString, 1);
+    }
+
+    public string GetCertificateFromXml(string? xmlString, int signId)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (xmlString is null)
+        {
+            throw new ArgumentNullException(nameof(xmlString));
+        }
+
+        var certificateLength = 0;
+        var errorCode = StKCFunctionsType.KC_getCertFromXML(xmlString, xmlString.Length, signId, null, ref certificateLength);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var certificate = new StringBuilder(certificateLength);
+        errorCode = StKCFunctionsType.KC_getCertFromXML(xmlString, xmlString.Length, signId, certificate, ref certificateLength);
+        ThrowIfError(errorCode);
+        return certificate.ToString();
+    }
+
+    public string GetSignatureAlgrithmFromXml(string? xmlString)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (xmlString is null)
+        {
+            throw new ArgumentNullException(nameof(xmlString));
+        }
+
+        var certificateLength = 0;
+        var errorCode = StKCFunctionsType.KC_getSigAlgFromXML(xmlString, xmlString.Length, null, ref certificateLength);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var certificate = new StringBuilder(certificateLength);
+        errorCode = StKCFunctionsType.KC_getSigAlgFromXML(xmlString, xmlString.Length, certificate, ref certificateLength);
+        ThrowIfError(errorCode);
+        return certificate.ToString();
     }
 
     private void EnsureKeyStoreLoaded()
