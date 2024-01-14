@@ -169,14 +169,21 @@ public sealed class KalkanApi
         }
 
         int certificateLength = certificate.Length;
-        int outputInformationLength = 8192;
-        StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
-        int ospResponseLength = 8192;
-        StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
+        int outputInformationLength = 0;
+        int ospResponseLength = 0;
         const int KC_NOCHECKCERTTIME = 0x00010000;
         const int KC_GET_OCSP_RESPONSE = 0x00080000;
         int flag = (checkCertificateTime ? 0 : KC_NOCHECKCERTTIME) + (getOscpResponse ? KC_GET_OCSP_RESPONSE : 0);
-        var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformationBuilder, ref outputInformationLength, flag, ospResponseBuilder, ref ospResponseLength);
+
+        var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, null, ref outputInformationLength, flag, null, ref ospResponseLength);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
+        StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
+        errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformationBuilder, ref outputInformationLength, flag, ospResponseBuilder, ref ospResponseLength);
         ThrowIfError(errorCode);
         outputInformation = outputInformationBuilder.ToString();
         ospResponse = ospResponseBuilder.ToString();
