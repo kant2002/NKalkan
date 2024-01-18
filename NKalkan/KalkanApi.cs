@@ -18,7 +18,7 @@ public sealed class KalkanApi
 
     static unsafe KalkanApi()
     {
-#if NETCOREAPP3_0_OR_GREATER
+        #if NETCOREAPP3_0_OR_GREATER
         NativeLibrary.SetDllImportResolver(typeof(KalkanApi).Assembly, (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
         {
             if (NativeLibrary.TryLoad("libkalkancryptwr-64.so", out var kalkanLib))
@@ -33,7 +33,7 @@ public sealed class KalkanApi
 
             return IntPtr.Zero;
         });
-#endif
+        #endif
 
         int result = KC_GetFunctionList(out var functionsType);
         if (result != 0)
@@ -180,6 +180,10 @@ public sealed class KalkanApi
         {
             ThrowIfError(errorCode);
         }
+
+        // Fix: BUFFER_TOO_SMALL
+        ospResponseLength = ospResponseLength + 200;
+        outputInformationLength = outputInformationLength + 200;
 
         StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
         StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
