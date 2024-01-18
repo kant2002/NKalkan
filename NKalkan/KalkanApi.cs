@@ -18,7 +18,7 @@ public sealed class KalkanApi
 
     static unsafe KalkanApi()
     {
-        #if NETCOREAPP3_0_OR_GREATER
+#if NETCOREAPP3_0_OR_GREATER
         NativeLibrary.SetDllImportResolver(typeof(KalkanApi).Assembly, (string libraryName, Assembly assembly, DllImportSearchPath? searchPath) =>
         {
             if (NativeLibrary.TryLoad("libkalkancryptwr-64.so", out var kalkanLib))
@@ -33,7 +33,7 @@ public sealed class KalkanApi
 
             return IntPtr.Zero;
         });
-        #endif
+#endif
 
         int result = KC_GetFunctionList(out var functionsType);
         if (result != 0)
