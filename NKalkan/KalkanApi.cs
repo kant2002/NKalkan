@@ -157,7 +157,7 @@ public sealed class KalkanApi
 
     public void ValidateCertificateOscp(string certificate, bool checkCertificateTime, out string outputInformation)
     {
-        ValidateCertificate(certificate, KalkanValidationType.Ocsp, "http://ocsp.pki.gov.kz/", checkCertificateTime, false, out outputInformation, out var ospResponse);
+        ValidateCertificate(certificate, KalkanValidationType.Ocsp, "http://ocsp.pki.gov.kz/", checkCertificateTime, false, out outputInformation, out var _);
     }
 
     public void ValidateCertificate(string certificate, KalkanValidationType validationType, string validPath, bool checkCertificateTime, bool getOscpResponse, out string outputInformation, out string ospResponse)

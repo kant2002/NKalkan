@@ -54,7 +54,6 @@ void SignXml(KalkanApi api)
     // Keys and Certs\Gost2004 and RSA\2023.11.17_valid\Физическое лицо\valid\
     var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
-    var documentToSign = "<xml><MyData /></xml>";
     var messageBody = $"""
 <?xml version="1.0" encoding="UTF-8"?>
 <sendMessageRequest>
