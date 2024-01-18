@@ -172,10 +172,10 @@ api.LoadKeyStoreFromBase64(KalkanStorageType.PKCS12, base64Content, certificateP
 | KC_GetTokens     | :white_large_square: |
 | KC_GetCertificatesList     | :white_large_square: |
 | KC_LoadKeyStore     | :white_check_mark: |
-| X509LoadCertificateFromFile     | :white_large_square: |
+| X509LoadCertificateFromFile     | :white_check_mark: |
 | X509LoadCertificateFromBuffer     | :white_large_square: |
-| X509ExportCertificateFromStore     | :white_large_square: |
-| X509CertificateGetInfo     | :white_large_square: |
+| X509ExportCertificateFromStore     | :white_check_mark: |
+| X509CertificateGetInfo     | :white_check_mark: |
 | X509ValidateCertificate     | :white_check_mark: |
 | HashData     | :white_check_mark: |
 | SignHash     | :white_check_mark: |
