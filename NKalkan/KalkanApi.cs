@@ -181,6 +181,10 @@ public sealed class KalkanApi
             ThrowIfError(errorCode);
         }
 
+        // Fix: BUFFER_TOO_SMALL
+        ospResponseLength = ospResponseLength + 200;
+        outputInformationLength = outputInformationLength + 200;
+
         StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
         StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
         errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformationBuilder, ref outputInformationLength, flag, ospResponseBuilder, ref ospResponseLength);
