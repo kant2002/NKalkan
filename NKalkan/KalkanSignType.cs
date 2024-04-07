@@ -2,6 +2,6 @@
 
 public enum KalkanSignType
 {
-    Draft,
-    Cms,
+    Draft = 1,
+    Cms = 2,
 }
