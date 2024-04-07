@@ -1,5 +1,8 @@
-﻿namespace NKalkan;
+﻿using System;
 
+namespace NKalkan;
+
+[Flags]
 public enum KalkanSignFlags
 {
     SignDraft		= 0x00000001,
