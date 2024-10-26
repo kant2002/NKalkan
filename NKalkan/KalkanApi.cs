@@ -26,7 +26,7 @@ public sealed class KalkanApi
                 return kalkanLib;
             }
 
-            if (NativeLibrary.TryLoad("KalkanCrypt.dll", out var kalkanLibDll))
+            if (NativeLibrary.TryLoad("KalkanCrypt.dll", assembly, searchPath, out var kalkanLibDll))
             {
                 return kalkanLibDll;
             }
