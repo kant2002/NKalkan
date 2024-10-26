@@ -1,5 +1,7 @@
 ﻿# NKalcan
 
+![NuGet Version](https://img.shields.io/nuget/v/NKalkan)
+
 Библиотека для работы с криптопровайдером АО "НУЦ" [KalkanCrypt](https://pki.gov.kz/developers/)
 
 Данная библиотека использует C API, в том числе на Windows. KalkanCryptCOM.dll не используется.
