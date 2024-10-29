@@ -318,6 +318,38 @@ public sealed class KalkanApi
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
+    
+    /// <summary>
+    /// Sing envelope with custom xml attributes 
+    /// </summary>
+    /// <param name="envelope"></param>
+    /// <param name="signNodeId"></param>
+    /// <param name="flags"></param>
+    /// <param name="certificateAlias"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public string SignEnvelopeWsse(string envelope, string? signNodeId, KalkanSignFlags flags = 0, string? certificateAlias = null)
+    {
+        EnsureInitialized();
+        EnsureKeyStoreLoaded();
+        if (signNodeId is null)
+        {
+            throw new ArgumentNullException(nameof(signNodeId));
+        }
+
+        var signedPayloadLength = 0;
+        var documentToSignLength = Encoding.UTF8.GetByteCount(envelope);
+        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, envelope, documentToSignLength, null, ref signedPayloadLength, signNodeId);
+        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        {
+            ThrowIfError(errorCode);
+        }
+
+        var signedPayload = new StringBuilder(signedPayloadLength);
+        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, envelope, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
+        ThrowIfError(errorCode);
+        return signedPayload.ToString();
+    }
 
     public string HashData(string algorithm, byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
     {
