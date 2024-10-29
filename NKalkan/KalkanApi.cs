@@ -328,7 +328,7 @@ public sealed class KalkanApi
     /// <param name="certificateAlias"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public string SignEnvelopeWsse(string envelope, string? signNodeId, KalkanSignFlags flags = 0, string? certificateAlias = null)
+    public string SignWsseRaw(string envelope, string? signNodeId, KalkanSignFlags flags = 0, string? certificateAlias = null)
     {
         EnsureInitialized();
         EnsureKeyStoreLoaded();
