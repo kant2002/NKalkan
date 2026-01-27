@@ -54,7 +54,6 @@ void SignXml(KalkanApi api)
     // Keys and Certs\Gost2004 and RSA\2023.11.17_valid\Физическое лицо\valid\
     var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
-    var documentToSign = "<xml><MyData /></xml>";
     var messageBody = $"""
 <?xml version="1.0" encoding="UTF-8"?>
 <sendMessageRequest>
@@ -103,13 +102,13 @@ static string? XmlEscape(string? s)
     if (string.IsNullOrEmpty(s))
         return s;
 
-    return string.Join("", s.Select(c => c < 127 ? c.ToString() : "&#" + (short)c + ";"));
+    return s;// string.Join("", s.Select(c => c < 127 ? c.ToString() : "&#" + (short)c + ";"));
 }
 
 void SignWsse(KalkanApi api)
 {
     Console.WriteLine("Testing WSSE signing");
-    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
     var messageId = "123";
     var messageBody = $"""
@@ -141,7 +140,7 @@ void SignWsse(KalkanApi api)
 void SignData(KalkanApi api)
 {
     Console.WriteLine("Testing plain data signing");
-    var certificatePath = "AUTH_RSA256_0d173f61245c1a0fc57cdcfe696032a91e3dcf0d.p12";
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
     var documentToSign = "Super important data";
     var data = Encoding.UTF8.GetBytes(documentToSign); // this is to simulate some byte content
@@ -165,7 +164,7 @@ catch (Exception e)
 void HashData(KalkanApi api)
 {
     Console.WriteLine("Testing data hashing");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
     var documentToHash = "Super important data122222ds ahdhasdhasd asdas das d asd asd adsa das dasd asd asd";
     var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
@@ -183,7 +182,7 @@ void HashData(KalkanApi api)
 void HashDataFromFile(KalkanApi api)
 {
     Console.WriteLine("Testing hashing file content");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
     var documentToHash = "Super important data122222ds ahdhasdhasd asdas das d asd asd adsa das dasd asd asd";
     var data = Encoding.UTF8.GetBytes(documentToHash); // this is to simulate some byte content
@@ -197,7 +196,7 @@ void HashDataFromFile(KalkanApi api)
 void LoadKeyStoreFromMemory(KalkanApi api)
 {
     Console.WriteLine("Loading key from memory");
-    var certificatePath = "GOSTKNCA_60e31061cedbcc9f917a2be0fb8ec3c04eb4b598.p12";
+    var certificatePath = "AUTH_RSA256_df5e58a1d8998ac28a8409ef1d9c7f41dfdbd114.p12";
     var certificatePassword = "Qwerty12";
 
     api.LoadKeyStore(KalkanStorageType.PKCS12, File.ReadAllBytes(certificatePath), certificatePassword);
