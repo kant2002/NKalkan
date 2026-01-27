@@ -29,7 +29,7 @@ internal delegate KalkanError KC_getSigAlgFromXML(string? inXml, int inXmlLength
 internal delegate KalkanError KC_SignData(string? alias, int flags, byte[] inData, int inDataLength, string? inSign, int inSignLength, StringBuilder? outSign, ref int outSignoutSignLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_VerifyData(string? alias, int flags, byte[] inData, int inDataLength, string inoutSign, int inoutSignLength, 
+internal delegate KalkanError KC_VerifyData(string? alias, int flags, byte[] inData, int inDataLength, string inoutSign, int inoutSignLength,
     StringBuilder? outData, ref int outDataLength, StringBuilder? outVerifyInfo, ref int outVerifyInfoLength, int inCertID, StringBuilder? outCert, ref int outCertLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -42,7 +42,7 @@ internal delegate KalkanError KC_X509ExportCertificateFromStore(string? alias, i
 internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, int certificateDataLength, int propertyId, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder certificatePropertyData, ref int certificatePropertyDataLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_X509ValidateCertificate(string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? outputInformation, ref int outputInformationLength, int flag, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? ocsPResponse, ref int ocsPResponseLength);
+internal delegate KalkanError KC_X509ValidateCertificate([MarshalAs(UnmanagedType.LPUTF8Str)] string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, IntPtr outputInformation, ref int outputInformationLength, int flag, IntPtr ocsPResponse, ref int ocsPResponseLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);

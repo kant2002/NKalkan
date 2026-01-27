@@ -168,28 +168,37 @@ public sealed class KalkanApi
             throw new ArgumentNullException(nameof(certificate));
         }
 
-        int certificateLength = certificate.Length;
-        int outputInformationLength = 0;
-        int ospResponseLength = 0;
-        
+        int certificateLength = Encoding.UTF8.GetByteCount(certificate);
+        int outputInformationLength = 64 * 1024;
+        int ospResponseLength = getOscpResponse ? 128 * 1024 : 0;
+
         int flag = (checkCertificateTime ? 0 : KalkanConstants.KC_NOCHECKCERTTIME) + (getOscpResponse ? KalkanConstants.KC_GET_OCSP_RESPONSE : 0);
 
-        var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, null, ref outputInformationLength, flag, null, ref ospResponseLength);
-        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
+        IntPtr outputInformationBuf = Marshal.AllocHGlobal(outputInformationLength);
+        IntPtr ospResponseBuf = getOscpResponse ? Marshal.AllocHGlobal(ospResponseLength) : IntPtr.Zero;
+
+        try
         {
+            var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformation: outputInformationBuf, ref outputInformationLength, flag, ocsPResponse: ospResponseBuf, ref ospResponseLength);
             ThrowIfError(errorCode);
+
+            outputInformation = KalkanUtils.ReadUtf8(outputInformationBuf, outputInformationLength);
+
+            if (getOscpResponse && ospResponseBuf != IntPtr.Zero && ospResponseLength > 0)
+            {
+                var ocspBytes = KalkanUtils.ReadBytes(ospResponseBuf, ospResponseLength);
+                ospResponse = ocspBytes.Length > 0 ? Convert.ToBase64String(ocspBytes) : string.Empty;
+            }
+            else
+            {
+                ospResponse = string.Empty;
+            }
         }
-
-        // Fix: BUFFER_TOO_SMALL
-        ospResponseLength = ospResponseLength + 200;
-        outputInformationLength = outputInformationLength + 200;
-
-        StringBuilder ospResponseBuilder = new StringBuilder(ospResponseLength);
-        StringBuilder outputInformationBuilder = new StringBuilder(outputInformationLength);
-        errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformationBuilder, ref outputInformationLength, flag, ospResponseBuilder, ref ospResponseLength);
-        ThrowIfError(errorCode);
-        outputInformation = outputInformationBuilder.ToString();
-        ospResponse = ospResponseBuilder.ToString();
+        finally
+        {
+            Marshal.FreeHGlobal(outputInformationBuf);
+            if (ospResponseBuf != IntPtr.Zero) Marshal.FreeHGlobal(ospResponseBuf);
+        }
     }
 
     public string SignXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
@@ -318,7 +327,7 @@ public sealed class KalkanApi
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
-    
+
     /// <summary>
     /// Sing envelope with custom xml attributes 
     /// </summary>
@@ -522,7 +531,7 @@ public sealed class KalkanApi
 
         throw new InvalidOperationException(err.ToString());
     }
-    
+
     private static KalkanSignFlags SignFlags(KalkanSignType signType, KalkanInputFormat inputFormat,
         KalkanOutputFormat outputFormat)
     {
