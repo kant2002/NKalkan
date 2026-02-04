@@ -48,6 +48,9 @@ internal delegate KalkanError KC_X509ValidateCertificate(string certificateData,
 internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate KalkanError KC_SignWSSE_Byte(string? alias, int flags, byte[] inData, int inDataLength, byte[] outSign, ref int outSignoutSignLength, string? signNodeId);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_HashData(string? algorithm, int flags, byte[] inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength);
 
 [StructLayout(LayoutKind.Sequential)]
@@ -66,6 +69,7 @@ internal unsafe struct StKCFunctionsType
     public KC_HashData SignHash;
     public KC_SignData SignData;
     public KC_SignXML SignXML;
+    public KC_SignWSSE_Byte SignWSSEByte;
     public KC_VerifyData VerifyData;
     public KC_VerifyXML VerifyXML;
     public KC_getCertFromXML KC_getCertFromXML;
