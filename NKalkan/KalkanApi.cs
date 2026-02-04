@@ -174,8 +174,17 @@ public sealed class KalkanApi
 
         int flag = (checkCertificateTime ? 0 : KalkanConstants.KC_NOCHECKCERTTIME) + (getOscpResponse ? KalkanConstants.KC_GET_OCSP_RESPONSE : 0);
 
-        IntPtr outputInformationBuf = Marshal.AllocHGlobal(outputInformationLength);
-        IntPtr ospResponseBuf = getOscpResponse ? Marshal.AllocHGlobal(ospResponseLength) : IntPtr.Zero;
+        IntPtr outputInformationBuf;
+        byte[]? ospResponseBuf = getOscpResponse ? new byte[ospResponseLength] : null;
+
+#if NET6_0_OR_GREATER
+        unsafe
+        {
+            outputInformationBuf = (IntPtr)NativeMemory.Alloc((nuint)outputInformationLength);
+        }
+#else
+        outputInformationBuf = Marshal.AllocHGlobal(outputInformationLength);
+#endif
 
         try
         {
@@ -184,10 +193,9 @@ public sealed class KalkanApi
 
             outputInformation = KalkanUtils.ReadUtf8(outputInformationBuf, outputInformationLength);
 
-            if (getOscpResponse && ospResponseBuf != IntPtr.Zero && ospResponseLength > 0)
+            if (getOscpResponse && ospResponseBuf != null && ospResponseLength > 0)
             {
-                var ocspBytes = KalkanUtils.ReadBytes(ospResponseBuf, ospResponseLength);
-                ospResponse = ocspBytes.Length > 0 ? Convert.ToBase64String(ocspBytes) : string.Empty;
+                ospResponse = Convert.ToBase64String(ospResponseBuf, 0, ospResponseLength);
             }
             else
             {
@@ -196,8 +204,14 @@ public sealed class KalkanApi
         }
         finally
         {
+#if NET6_0_OR_GREATER
+            unsafe
+            {
+                NativeMemory.Free((void*)outputInformationBuf);
+            }
+#else
             Marshal.FreeHGlobal(outputInformationBuf);
-            if (ospResponseBuf != IntPtr.Zero) Marshal.FreeHGlobal(ospResponseBuf);
+#endif
         }
     }
 

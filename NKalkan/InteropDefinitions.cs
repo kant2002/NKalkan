@@ -42,7 +42,7 @@ internal delegate KalkanError KC_X509ExportCertificateFromStore(string? alias, i
 internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, int certificateDataLength, int propertyId, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder certificatePropertyData, ref int certificatePropertyDataLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_X509ValidateCertificate([MarshalAs(UnmanagedType.LPUTF8Str)] string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, IntPtr outputInformation, ref int outputInformationLength, int flag, IntPtr ocsPResponse, ref int ocsPResponseLength);
+internal delegate KalkanError KC_X509ValidateCertificate([MarshalAs(UnmanagedType.LPUTF8Str)] string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, IntPtr outputInformation, ref int outputInformationLength, int flag, [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)] byte[]? ocsPResponse, ref int ocsPResponseLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);
