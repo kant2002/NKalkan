@@ -7,7 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-    <Version>0.6.1</Version>
+    <Version>0.7.0</Version>
     <Description>Кросплатформенная библиотека для работы с криптопровайдером АО "НУЦ" KalkanCrypt</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
