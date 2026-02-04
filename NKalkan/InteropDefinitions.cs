@@ -45,10 +45,7 @@ internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, 
 internal delegate KalkanError KC_X509ValidateCertificate(string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? outputInformation, ref int outputInformationLength, int flag, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? ocsPResponse, ref int ocsPResponseLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_SignWSSE_Byte(string? alias, int flags, byte[] inData, int inDataLength, byte[] outSign, ref int outSignoutSignLength, string? signNodeId);
+internal delegate KalkanError KC_SignWSSE(string? alias, int flags, byte[] inData, int inDataLength, byte[] outSign, ref int outSignoutSignLength, string? signNodeId);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_HashData(string? algorithm, int flags, byte[] inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength);
@@ -69,7 +66,6 @@ internal unsafe struct StKCFunctionsType
     public KC_HashData SignHash;
     public KC_SignData SignData;
     public KC_SignXML SignXML;
-    public KC_SignWSSE_Byte SignWSSEByte;
     public KC_VerifyData VerifyData;
     public KC_VerifyXML VerifyXML;
     public KC_getCertFromXML KC_getCertFromXML;

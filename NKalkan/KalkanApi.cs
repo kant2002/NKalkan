@@ -44,8 +44,6 @@ public sealed class KalkanApi
         if (functionsType.stKCFunctionsType != IntPtr.Zero)
         {
             StKCFunctionsType = Marshal.PtrToStructure<StKCFunctionsType>(functionsType.stKCFunctionsType);
-            var signWSSEPtr = Marshal.GetFunctionPointerForDelegate(StKCFunctionsType.SignWSSE);
-            StKCFunctionsType.SignWSSEByte = Marshal.GetDelegateForFunctionPointer<KC_SignWSSE_Byte>(signWSSEPtr);
         }
 
         var errCode = StKCFunctionsType.KC_Init();
@@ -307,18 +305,19 @@ public sealed class KalkanApi
     <s:Body wsu:id="{signNodeId}">{content}</s:Body>
 </s:Envelope>
 """;
+        var documentToSignBytes = Encoding.UTF8.GetBytes(documentToSign);
         var signedPayloadLength = 0;
-        var documentToSignLength = Encoding.UTF8.GetByteCount(documentToSign);
-        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSignLength, null, ref signedPayloadLength, signNodeId);
+        var documentToSignLength = documentToSign.Length;
+        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSignBytes, documentToSignLength, Array.Empty<byte>(), ref signedPayloadLength, signNodeId);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
         }
 
-        var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSign, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
+        var signedPayload = new byte[signedPayloadLength];
+        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSignBytes, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
         ThrowIfError(errorCode);
-        return signedPayload.ToString();
+        return Encoding.UTF8.GetString(signedPayload, 0, signedPayloadLength).TrimEnd('\0');
     }
     
     /// <summary>
@@ -339,45 +338,13 @@ public sealed class KalkanApi
             throw new ArgumentNullException(nameof(signNodeId));
         }
 
-        var signedPayloadLength = 0;
-        var documentToSignLength = Encoding.UTF8.GetByteCount(envelope);
-        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, envelope, documentToSignLength, null, ref signedPayloadLength, signNodeId);
-        if (errorCode != KalkanError.BUFFER_TOO_SMALL)
-        {
-            ThrowIfError(errorCode);
-        }
-
-        var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, envelope, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
-        ThrowIfError(errorCode);
-        return signedPayload.ToString();
-    }
-
-    /// <summary>
-    /// Sign envelope using byte[] for UTF-8 handling (new version for Cyrillic support, no need for xml-escaping)
-    /// </summary>
-    /// <param name="envelope">The XML string with actual Cyrillic (no escaping)</param>
-    /// <param name="signNodeId"></param>
-    /// <param name="flags"></param>
-    /// <param name="certificateAlias"></param>
-    /// <returns>The signed XML string with proper UTF-8</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public string SignWsseRawByte(string envelope, string? signNodeId, KalkanSignFlags flags = 0, string? certificateAlias = null)
-    {
-        EnsureInitialized();
-        EnsureKeyStoreLoaded();
-        if (signNodeId is null)
-        {
-            throw new ArgumentNullException(nameof(signNodeId));
-        }
-
         // Convert input XML to UTF-8 bytes
         byte[] inData = Encoding.UTF8.GetBytes(envelope);
         int inDataLength = inData.Length;
 
         // First call to get required output length (pass null for outSign)
         int outSignLength = 0;
-        var errorCode = StKCFunctionsType.SignWSSEByte(certificateAlias, (int)flags, inData, inDataLength, Array.Empty<byte>(), ref outSignLength, signNodeId);
+        var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, inData, inDataLength, Array.Empty<byte>(), ref outSignLength, signNodeId);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
@@ -385,13 +352,13 @@ public sealed class KalkanApi
 
         // Allocate output buffer and sign
         byte[] outSign = new byte[outSignLength];
-        errorCode = StKCFunctionsType.SignWSSEByte(certificateAlias, (int)flags, inData, inDataLength, outSign, ref outSignLength, signNodeId);
+        errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, inData, inDataLength, outSign, ref outSignLength, signNodeId);
         ThrowIfError(errorCode);
 
         // Convert output bytes back to string (trim any null terminator if present)
-        string signedXml = Encoding.UTF8.GetString(outSign, 0, outSignLength).TrimEnd('\0');
-        return signedXml;
+        return Encoding.UTF8.GetString(outSign, 0, outSignLength).TrimEnd('\0');
     }
+
     public string HashData(string algorithm, byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
     {
         var flags = SignFlags(signType, inputFormat, outputFormat);
