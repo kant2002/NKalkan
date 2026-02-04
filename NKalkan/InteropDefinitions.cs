@@ -45,7 +45,7 @@ internal delegate KalkanError KC_X509CertificateGetInfo(string certificateData, 
 internal delegate KalkanError KC_X509ValidateCertificate(string certificateData, int certificateDataLength, int validType, [MarshalAs(UnmanagedType.LPUTF8Str)] string validPath, long checkTime, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? outputInformation, ref int outputInformationLength, int flag, [MarshalAs(UnmanagedType.LPUTF8Str)] StringBuilder? ocsPResponse, ref int ocsPResponseLength);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_SignWSSE(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId);
+internal delegate KalkanError KC_SignWSSE(string? alias, int flags, byte[] inData, int inDataLength, byte[] outSign, ref int outSignoutSignLength, string? signNodeId);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_HashData(string? algorithm, int flags, byte[] inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength);
