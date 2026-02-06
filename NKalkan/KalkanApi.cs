@@ -174,45 +174,18 @@ public sealed class KalkanApi
 
         int flag = (checkCertificateTime ? 0 : KalkanConstants.KC_NOCHECKCERTTIME) + (getOscpResponse ? KalkanConstants.KC_GET_OCSP_RESPONSE : 0);
 
-        IntPtr outputInformationBuf;
+        byte[] outputInformationBuf = new byte[outputInformationLength];
         byte[]? ospResponseBuf = getOscpResponse ? new byte[ospResponseLength] : null;
 
-#if NET6_0_OR_GREATER
-        unsafe
-        {
-            outputInformationBuf = (IntPtr)NativeMemory.Alloc((nuint)outputInformationLength);
-        }
-#else
-        outputInformationBuf = Marshal.AllocHGlobal(outputInformationLength);
-#endif
+        var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformation: outputInformationBuf, ref outputInformationLength, flag, ocsPResponse: ospResponseBuf, ref ospResponseLength);
+        ThrowIfError(errorCode);
 
-        try
-        {
-            var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, outputInformation: outputInformationBuf, ref outputInformationLength, flag, ocsPResponse: ospResponseBuf, ref ospResponseLength);
-            ThrowIfError(errorCode);
+        outputInformation = Encoding.UTF8.GetString(outputInformationBuf, 0, outputInformationLength);
 
-            outputInformation = KalkanUtils.ReadUtf8(outputInformationBuf, outputInformationLength);
-
-            if (getOscpResponse && ospResponseBuf != null && ospResponseLength > 0)
-            {
-                ospResponse = Convert.ToBase64String(ospResponseBuf, 0, ospResponseLength);
-            }
-            else
-            {
-                ospResponse = string.Empty;
-            }
-        }
-        finally
-        {
-#if NET6_0_OR_GREATER
-            unsafe
-            {
-                NativeMemory.Free((void*)outputInformationBuf);
-            }
-#else
-            Marshal.FreeHGlobal(outputInformationBuf);
-#endif
-        }
+        if (getOscpResponse && ospResponseBuf != null && ospResponseLength > 0)
+            ospResponse = Convert.ToBase64String(ospResponseBuf, 0, ospResponseLength);
+        else
+            ospResponse = string.Empty;
     }
 
     public string SignXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null, string? signNodeId = null, string? parentSignNode = null, string parentNameSpace = "")
