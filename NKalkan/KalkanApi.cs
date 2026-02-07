@@ -150,6 +150,11 @@ public sealed class KalkanApi
         ValidateCertificate(certificate, KalkanValidationType.Ocsp, "http://ocsp.pki.gov.kz/", checkCertificateTime, true, out outputInformation, out ospResponse);
     }
 
+    public void ValidateCertificateOscp(string certificate, bool checkCertificateTime, out string outputInformation, out string ospResponse, string validPath = "http://ocsp.pki.gov.kz/")
+    {
+        ValidateCertificate(certificate, KalkanValidationType.Ocsp, validPath, checkCertificateTime, true, out outputInformation, out ospResponse);
+    }
+
     public void ValidateCertificateOscp(string certificate, out string outputInformation)
     {
         ValidateCertificateOscp(certificate, true, out outputInformation);
@@ -171,7 +176,7 @@ public sealed class KalkanApi
         int certificateLength = certificate.Length;
         int outputInformationLength = 0;
         int ospResponseLength = 0;
-        
+
         int flag = (checkCertificateTime ? 0 : KalkanConstants.KC_NOCHECKCERTTIME) + (getOscpResponse ? KalkanConstants.KC_GET_OCSP_RESPONSE : 0);
 
         var errorCode = StKCFunctionsType.X509ValidateCertificate(certificate, certificateLength, (int)validationType, validPath, checkTime: 0, null, ref outputInformationLength, flag, null, ref ospResponseLength);
@@ -318,7 +323,7 @@ public sealed class KalkanApi
         ThrowIfError(errorCode);
         return signedPayload.ToString();
     }
-    
+
     /// <summary>
     /// Sing envelope with custom xml attributes 
     /// </summary>
@@ -522,7 +527,7 @@ public sealed class KalkanApi
 
         throw new InvalidOperationException(err.ToString());
     }
-    
+
     private static KalkanSignFlags SignFlags(KalkanSignType signType, KalkanInputFormat inputFormat,
         KalkanOutputFormat outputFormat)
     {
