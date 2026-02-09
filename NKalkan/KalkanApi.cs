@@ -198,17 +198,18 @@ public sealed class KalkanApi
         }
 
         var signedPayloadLength = 0;
-        var contentLength = Encoding.UTF8.GetByteCount(content);
-        var errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, contentLength, null, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        var contentBytes = Encoding.UTF8.GetBytes(content);
+        var contentLength = contentBytes.Length;
+        var errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, contentBytes, contentLength, Array.Empty<byte>(), ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
             ThrowIfError(errorCode);
         }
 
-        var signedPayload = new StringBuilder(signedPayloadLength);
-        errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, content, contentLength, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
+        var signedPayload = new byte[signedPayloadLength];
+        errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, contentBytes, contentLength, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         ThrowIfError(errorCode);
-        return signedPayload.ToString();
+        return Encoding.UTF8.GetString(signedPayload, 0, signedPayloadLength).TrimEnd('\0');
     }
 
     public string VerifyXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null)

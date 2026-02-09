@@ -14,7 +14,7 @@ internal delegate KalkanError KC_GetLastErrorString(StringBuilder? errorString, 
 internal delegate KalkanError KC_LoadKeyStore(int storage, string password, int passLen, string container, int containerLen, string? alias);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate KalkanError KC_SignXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outSign, ref int outSignoutSignLength, string? signNodeId, string? parentSignNode, string? parentNameSpace);
+internal delegate KalkanError KC_SignXML(string? alias, int flags, byte[] inData, int inDataLength, byte[] outSign, ref int outSignoutSignLength, string? signNodeId, string? parentSignNode, string? parentNameSpace);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate KalkanError KC_VerifyXML(string? alias, int flags, string inData, int inDataLength, StringBuilder? outVerifyInfo, ref int outVerifyInfoLength);
