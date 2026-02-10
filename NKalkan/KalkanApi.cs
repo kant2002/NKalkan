@@ -209,7 +209,7 @@ public sealed class KalkanApi
         var signedPayload = new byte[signedPayloadLength];
         errorCode = StKCFunctionsType.SignXML(certificateAlias, (int)flags, contentBytes, contentLength, signedPayload, ref signedPayloadLength, signNodeId, parentSignNode, parentNameSpace);
         ThrowIfError(errorCode);
-        return Encoding.UTF8.GetString(signedPayload, 0, signedPayloadLength).TrimEnd('\0');
+        return TrimSignedPayloadNullTerminator(signedPayload, signedPayloadLength);
     }
 
     public string VerifyXml(string content, KalkanSignFlags flags = 0, string? certificateAlias = null)
@@ -314,7 +314,7 @@ public sealed class KalkanApi
         var signedPayload = new byte[signedPayloadLength];
         errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSignBytes, documentToSignLength, signedPayload, ref signedPayloadLength, signNodeId);
         ThrowIfError(errorCode);
-        return Encoding.UTF8.GetString(signedPayload, 0, signedPayloadLength).TrimEnd('\0');
+        return TrimSignedPayloadNullTerminator(signedPayload, signedPayloadLength);
     }
 
     /// <summary>
@@ -352,8 +352,7 @@ public sealed class KalkanApi
         errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, inData, inDataLength, outSign, ref outSignLength, signNodeId);
         ThrowIfError(errorCode);
 
-        // Convert output bytes back to string (trim any null terminator if present)
-        return Encoding.UTF8.GetString(outSign, 0, outSignLength).TrimEnd('\0');
+        return TrimSignedPayloadNullTerminator(outSign, outSignLength);
     }
 
     public string HashData(string algorithm, byte[] content, KalkanSignType signType, KalkanInputFormat inputFormat, KalkanOutputFormat outputFormat)
@@ -581,5 +580,11 @@ public sealed class KalkanApi
         }
 
         return flags;
+    }
+
+    private static string TrimSignedPayloadNullTerminator(byte[] signedPayload, int signedPayloadLength)
+    {
+        ReadOnlySpan<byte> signedSpan = signedPayload.AsSpan(0, signedPayloadLength - 1);
+        return Encoding.UTF8.GetString(signedSpan.ToArray());
     }
 }
