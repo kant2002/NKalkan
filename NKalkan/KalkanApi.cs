@@ -304,7 +304,7 @@ public sealed class KalkanApi
 """;
         var documentToSignBytes = Encoding.UTF8.GetBytes(documentToSign);
         var signedPayloadLength = 0;
-        var documentToSignLength = documentToSign.Length;
+        var documentToSignLength = documentToSignBytes.Length;
         var errorCode = StKCFunctionsType.SignWSSE(certificateAlias, (int)flags, documentToSignBytes, documentToSignLength, Array.Empty<byte>(), ref signedPayloadLength, signNodeId);
         if (errorCode != KalkanError.BUFFER_TOO_SMALL)
         {
